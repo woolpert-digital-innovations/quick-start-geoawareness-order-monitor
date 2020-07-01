@@ -56,8 +56,43 @@ socket.on('connected', function(msg){
 });
 
 socket.on('orders', function(msg) {
-  if (msg == null) {
-    
+  if (msg == null || msg.length == 0) {
+    // alert no orders for this store
+  } else {
+    console.log('got orders', msg);
+    socket.emit('get geofences', msg.storeName);
+    // replace list of stores with orders
+    // show the order driver locations on the map
   }
-  console.log('got orders', msg);
+});
+
+socket.on('geofences', function(msg) {
+  console.log('got geofences', msg);
+  const colors = ['green', 'yellow', 'red']
+  let bounds = new google.maps.LatLngBounds();
+  let layers = [];
+  msg = msg.reverse(); // assume API returns outter most isochrone at index 0
+  msg.forEach((isochrone, i) => {
+    layers.push(new google.maps.Data({map: map}));
+  });
+  layers.forEach((layer, i) => {
+    let shape = msg[i].shape;
+    if (i < msg.length-1) {
+      shape = turf.difference(msg[i].shape, msg[i+1].shape);
+    }
+    layer.addGeoJson(shape);
+    layer.setStyle({
+      fillColor: colors[i],
+      title: msg[i].range,
+      strokeWidth: 1
+    });
+    // recenter the map to isochrone extents
+    layer.forEach(function(feature){
+      feature.getGeometry().forEachLatLng(function(latlng){
+         bounds.extend(latlng);
+      });
+    });
+  });
+
+  map.fitBounds(bounds);
 });

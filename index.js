@@ -26,8 +26,14 @@ io.on('connection', (socket) => {
   socket.on('get orders', (msg) => {
     const url = `${baseURL}/orders?storeName=${msg}`
     fetch(url).then(res => res.json()).then(json => {
-      console.log('got orders', json)
       socket.emit('orders', json);
+    });
+  });
+
+  socket.on('get geofences', (msg) => {
+    const url = `${baseURL}/geofences?storeName=${msg}`
+    fetch(url).then(res => res.json()).then(json => {
+      socket.emit('geofences', json);
     });
   });
 });
