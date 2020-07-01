@@ -12,7 +12,7 @@
   <style>
     html,body {
        margin: 0;
-       padding: 0;
+       padding: 5px;
        height: 100%;
        width: 100%;
     }
@@ -21,49 +21,37 @@
     }
   </style>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo&callback=initMap&libraries=&v=weekly"></script>
+  <script src="https://unpkg.com/mustache@latest"></script>
 </head>
 <body>
   <div class="container-fluid" style="height: 100%;">
     <div class="row" style="height: 90%;">
-      <div class="col-md-3">
-        <p><i class="fas fa-map fa-1x mr-2 grey-text"></i>First Column</p>
-        <ul>
-          <li>Order 1</li>
-          <li>Order 2</li>
-          <li>Order 3</li>
-          <li>Order 4</li>
-        </ul>
+      <div class="col-md-3" id="nav-list">
+        <div id="stores"></div>
       </div>
-      <div class="col-md-9" style="height: 100%;">
-        <p><i class="fas fa-building fa-1x mr-2 grey-text"></i>Second Column</p>
+      <div class="col-md-9" id="map-view" style="height: 100%;">
         <div id="map-container" class="z-depth-1-half map-container" style="height: 100%"></div>
       </div>
     </div>
   </div>
 
+  <script id="store-template" type="x-tmpl-mustache">
+    <div class="media position-relative">
+    <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+    <div class="card-header">{{ location.name }}</div>
+      <div class="card-body">
+        <p class="card-text text-white">{{ location.address }}</p>
+        <a href="#!" onClick="getOrders('{{ location.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  </script>
+
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/popper.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/mdb.min.js"></script>
-  <script type="text/javascript">
-    function map() {
-      let location = new google.maps.LatLng(40.725118, -73.997699);
-
-      var options = {
-        center: location,
-        zoom: 14
-      };
-
-      var map = new google.maps.Map(document.getElementById("map-container"), options);
-
-      var marker = new google.maps.Marker({
-        position: location,
-        map: map,
-        title: "New York"
-      });
-    }
-
-    google.maps.event.addDomListener(window, 'load', map);
-  </script>
+  <script src="js/socket.io.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

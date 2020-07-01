@@ -1,0 +1,24 @@
+{
+  "name": "geoawareness-orders",
+  "version": "1.0.0",
+  "description": "Socket.IO server for orders",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:woolpert/cloud/demos/geoawareness/geoawareness-orders.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.0",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
