@@ -2,8 +2,8 @@ const express = require('express')
 const fetch = require('node-fetch')
 const app = express()
 
-const port = 3000
-const baseURL = 'https://40f909ca-7e53-4b49-b3a1-64c7e820e6b2.mock.pstmn.io';
+const port = 8000
+const baseURL = 'http://localhost:3000';
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -39,5 +39,5 @@ io.on('connection', (socket) => {
 });
 
 http.listen(port, () => {
-  console.log(`listening on *:${port}`);
+  console.log(`socker server listening on *:${port}`);
 });

@@ -10,9 +10,13 @@ This is a NodeJS web server that serves
 
        npm install
 
-1. Start the server
+1. Start the server (this will start the mock json server and socket server)
 
        npm run dev
+
+1. Start just the socket server (like you would in production)
+
+       npm start
 
 1. Open the site in the browser http://localhost:3000
 

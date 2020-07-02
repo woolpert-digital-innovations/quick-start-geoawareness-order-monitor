@@ -4,7 +4,10 @@
   "description": "Socket.IO server for orders",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "start": "npm run socket-server",
+    "dev": "npm run mock-server & npm run socket-server",
+    "mock-server": "nodemon mock.js",
+    "socket-server": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
