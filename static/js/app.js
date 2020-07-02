@@ -138,36 +138,36 @@ socket.on('geofences', function(msg) {
   map.fitBounds(bounds);
 
   // Generate Random Driver Locations
-  var locations = [];
-  var bbox = turf.bbox(shapes[0]);
-  var ordernum = 9000;
-  for (var i = 0; i < 30; i++) {
-    var pos = turf.randomPosition(bbox);
-    locations.push(pos)
-  }
-  console.log('current orders are', orders)
-  console.log('randoms is', JSON.stringify(locations))
-    locations.forEach(loc => {
-      let range = -1;
-      shapes.forEach(shape => {
-        if (turf.booleanWithin(turf.point(loc), shape.geometry)) {
-          range = shape.properties.value;
-          console.log(`intersects with ${range}`, loc)
-        };
-      });
-      let newOrder = JSON.parse(JSON.stringify(orders[0]));
-      ordernum++;
-      newOrder.latestEvent.eventLocation.latitude = loc[1];
-      newOrder.latestEvent.eventLocation.longitude = loc[0];
-      newOrder.latestEvent.innerGeofence.range = range;
-      newOrder.orderId = ordernum;
-      if (range == -1) {
-        newOrder.latestEvent.innerGeofence = {};
-        newOrder.latestEvent.intersectsEvent = false;
-      }
-      // take all oders, stringify, make as new mock data
-      orders.push(newOrder);
-    });
-  console.log('new orders are', orders)
-  console.log(JSON.stringify(orders))
+  //var locations = [];
+  //var bbox = turf.bbox(shapes[0]);
+  //var ordernum = 9000;
+  //for (var i = 0; i < 30; i++) {
+  //  var pos = turf.randomPosition(bbox);
+  //  locations.push(pos)
+  //}
+  //console.log('current orders are', orders)
+  //console.log('randoms is', JSON.stringify(locations))
+  //  locations.forEach(loc => {
+  //    let range = -1;
+  //    shapes.forEach(shape => {
+  //      if (turf.booleanWithin(turf.point(loc), shape.geometry)) {
+  //        range = shape.properties.value;
+  //        console.log(`intersects with ${range}`, loc)
+  //      };
+  //    });
+  //    let newOrder = JSON.parse(JSON.stringify(orders[0]));
+  //    ordernum++;
+  //    newOrder.latestEvent.eventLocation.latitude = loc[1];
+  //    newOrder.latestEvent.eventLocation.longitude = loc[0];
+  //    newOrder.latestEvent.innerGeofence.range = range;
+  //    newOrder.orderId = ordernum;
+  //    if (range == -1) {
+  //      newOrder.latestEvent.innerGeofence = {};
+  //      newOrder.latestEvent.intersectsEvent = false;
+  //    }
+  //    // take all oders, stringify, make as new mock data
+  //    orders.push(newOrder);
+  //  });
+  //console.log('new orders are', orders)
+  //console.log(JSON.stringify(orders))
 });
