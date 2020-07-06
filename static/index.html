@@ -27,8 +27,8 @@
 <body>
   <div class="container-fluid" style="height: 100%;">
     <div class="row" style="height: 99%;">
-      <div class="col-md-3" id="nav-list">
-        <div id="stores"></div>
+      <div class="col-md-3" id="nav-list" style="height: 100%">
+        <div id="stores" class="h-100 w-100 d-inline-block overflow-auto p-1"></div>
       </div>
       <div class="col-md-9" id="map-view" style="height: 100%;">
         <div id="map-container" class="z-depth-1-half map-container" style="height: 100%"></div>
@@ -38,18 +38,43 @@
 
   <script id="store-template" type="x-tmpl-mustache">
     <div class="media position-relative">
-    <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-    <div class="card-header">{{ location.name }}</div>
-      <div class="card-body">
-        <p class="card-text text-white">{{ location.address }}</p>
-        <a href="#!" onClick="getOrders('{{ location.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+      <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+        <div class="card-header">{{ location.name }}</div>
+        <div class="card-body">
+          <p class="card-text text-white">{{ location.address }}
+          <a href="#!" onClick="getOrders('{{ location.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+        </div>
       </div>
     </div>
-  </div>
   </script>
 
-  <script type="text/javascript" src="js/jquery.min.js"></script>
-  <script type="text/javascript" src="js/popper.min.js"></script>
+  <script id="order-template" type="x-tmpl-mustache">
+    <div class="media position-relative w-100">
+      <div class="card text-white bg-primary mb-3 w-100">
+        <div class="card-header">Order# {{ order.orderId }}</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6 align-middle">
+              <p class="card-text text-white align-middle">{{ order.date }}</p>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn primary-color-dark btn-sm btn-block" onClick="closeOrder('{{ order.orderId }}');">Close</button>
+            </div>
+          </div>
+          <a href="#!" onClick="showOrder('{{ order.orderId }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script id="order-group-template" type="x-tmpl-mustache">
+    <div id="range-{{ range.id }}">
+      <hr class="hr" style="background-color:{{ range.color }}" />
+      <p>Within {{ range.time }} min</p>
+    </div>
+  </script>
+
+  <script type="text/javascript" src="js/jquery.min.js"></script> <script type="text/javascript" src="js/popper.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/mdb.min.js"></script>
   <script src="js/socket.io.js"></script>

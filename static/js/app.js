@@ -1,6 +1,6 @@
 const socket = io();
 let map = null;
-const colors = ['green', 'yellow', 'red']
+const colors = ['green', 'yellow', 'red', 'grey']
 
 function getColor(range) {
   switch(range) {
@@ -37,7 +37,7 @@ function renderStores(store) {
     fillColor: 'blue',
     fillOpacity: 0.8,
     scale: .1,
-    strokeColor: 'red',
+    strokeColor: 'black',
     strokeWeight: 1.5
   };
   const marker = new google.maps.Marker({
@@ -77,12 +77,51 @@ socket.on('orders', function(msg) {
     // alert no orders for this store
   } else {
     console.log('got orders', msg);
-    orders = msg;
+
+    orders = [
+      {
+        minutes: "2",
+        range: 120,
+        color: colors[2],
+        locations: []
+      },
+      {
+        minutes: "5",
+        range: 300,
+        color: colors[1],
+        locations: []
+      },
+      {
+        minutes: "10",
+        range: 600,
+        color: colors[0],
+        locations: []
+      },
+      {
+        minutes: ">10",
+        range: 601,
+        locations: []
+      },
+    ];
 
     // replace list of stores with orders
     // show the order driver locations on the map
     let locations = [];
     msg.forEach(order => {
+      switch(order.latestEvent.innnerGeofence) {
+        case 120:
+          orders[0].locations.push(order);
+          break;
+        case 300:
+          orders[1].locations.push(order);
+          break;
+        case 600:
+          orders[2].locations.push(order);
+          break;
+        default:
+          orders[3].locations.push(order);
+      }
+
       const loc = {lat: order.latestEvent.eventLocation.latitude, lng: order.latestEvent.eventLocation.longitude};
       locations.push(loc);
       new google.maps.Marker({
@@ -90,10 +129,50 @@ socket.on('orders', function(msg) {
         map: map,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 5
+          scale: 3,
+          strokeColor: "red"
         },
       });
     });
+
+    // sort them by most recently received
+    orders.forEach(list => {
+      list.locations.sort((a,b) => {
+        aDate = new Date(a.latestEvent.eventTimestamp);
+        bDate = new Date(b.latestEvent.eventTimestamp);
+        return a-b;
+      });
+    });
+
+    // render the orders by their isocrhone grouping
+    document.getElementById('stores').innerHTML = '';
+    orders.forEach(list => {
+      const template = document.getElementById('order-group-template').innerHTML;
+      const rendered = Mustache.render(template, {
+        range: {
+          id: list.range,
+          color: list.color,
+          time: list.minutes,
+        }
+      });
+      document.getElementById('stores').innerHTML += rendered;
+    });
+
+    orders.forEach(list => {
+      list.locations.forEach(location => {
+        location.date = new Date(location.latestEvent.eventTimestamp);
+        location.date = location.date.toLocaleTimeString();
+
+        // render the order card
+        if (!location.latestEvent.innerGeofence.range) {
+          location.latestEvent.innerGeofence.range = 601;
+        }
+        const template = document.getElementById('order-template').innerHTML;
+        const rendered = Mustache.render(template, { order: location });
+        document.getElementById(`range-${location.latestEvent.innerGeofence.range}`).innerHTML += rendered;
+      })
+    })
+
     socket.emit('get geofences', msg.storeName);
 
     // set extent to the orders
@@ -136,38 +215,4 @@ socket.on('geofences', function(msg) {
   });
 
   map.fitBounds(bounds);
-
-  // Generate Random Driver Locations
-  //var locations = [];
-  //var bbox = turf.bbox(shapes[0]);
-  //var ordernum = 9000;
-  //for (var i = 0; i < 30; i++) {
-  //  var pos = turf.randomPosition(bbox);
-  //  locations.push(pos)
-  //}
-  //console.log('current orders are', orders)
-  //console.log('randoms is', JSON.stringify(locations))
-  //  locations.forEach(loc => {
-  //    let range = -1;
-  //    shapes.forEach(shape => {
-  //      if (turf.booleanWithin(turf.point(loc), shape.geometry)) {
-  //        range = shape.properties.value;
-  //        console.log(`intersects with ${range}`, loc)
-  //      };
-  //    });
-  //    let newOrder = JSON.parse(JSON.stringify(orders[0]));
-  //    ordernum++;
-  //    newOrder.latestEvent.eventLocation.latitude = loc[1];
-  //    newOrder.latestEvent.eventLocation.longitude = loc[0];
-  //    newOrder.latestEvent.innerGeofence.range = range;
-  //    newOrder.orderId = ordernum;
-  //    if (range == -1) {
-  //      newOrder.latestEvent.innerGeofence = {};
-  //      newOrder.latestEvent.intersectsEvent = false;
-  //    }
-  //    // take all oders, stringify, make as new mock data
-  //    orders.push(newOrder);
-  //  });
-  //console.log('new orders are', orders)
-  //console.log(JSON.stringify(orders))
 });
