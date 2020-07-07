@@ -8,6 +8,7 @@
     "dev": "npm run mock-server & npm run socket-server",
     "mock-server": "nodemon mock.js",
     "socket-server": "nodemon index.js",
+    "lint": "npx eslint index.js mock.js static/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +23,9 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
     "nodemon": "^2.0.4"
   }
 }

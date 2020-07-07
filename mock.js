@@ -1,11 +1,12 @@
-const express = require('express')
+const express = require('express');
 const fs = require('fs');
-const app = express()
 
-const port = 3000
+const app = express();
+
+const port = 3000;
 
 function get(name) {
-  let obj = fs.readFileSync(`./mocks/${name}.json`, {encoding:'utf8', flag:'r'});
+  const obj = fs.readFileSync(`./mocks/${name}.json`, { encoding: 'utf8', flag: 'r' });
   return JSON.parse(obj);
 }
 

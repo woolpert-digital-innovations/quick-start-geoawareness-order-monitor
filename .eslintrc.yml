@@ -1,0 +1,15 @@
+env:
+  browser: true
+  es2020: true
+  node: true
+extends:
+  - airbnb-base
+parserOptions:
+  ecmaVersion: 11
+globals:
+  google: "readonly"
+  Mustache: "readonly"
+  turf: "readonly"
+rules: {
+  no-console: 0
+}

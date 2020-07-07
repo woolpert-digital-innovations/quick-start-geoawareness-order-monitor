@@ -1,38 +1,46 @@
-const express = require('express')
-const fetch = require('node-fetch')
-const app = express()
+const express = require('express');
+const fetch = require('node-fetch');
 
-const port = 8000
+const app = express();
+
+const port = 8000;
 const baseURL = 'http://localhost:3000';
+// const baseURL = ' https://geoawareness-api-bkejaovq4a-uw.a.run.app';
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-app.use(express.static('static'))
+app.use(express.static('static'));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/static/index.html');
+  res.sendFile(`${__dirname}/static/index.html`);
 });
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  fetch(`${baseURL}/stores`).then(res => res.json()).then(json => {
+
+  let url = `${baseURL}/stores`;
+  fetch(url).then((res) => res.json()).then((json) => {
+    console.log('got stores from', url);
     socket.emit('connected', json);
   });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 
   socket.on('get orders', (msg) => {
-    const url = `${baseURL}/orders?storeName=${msg}`
-    fetch(url).then(res => res.json()).then(json => {
+    url = `${baseURL}/orders?storeName=${msg}`;
+    fetch(url).then((res) => res.json()).then((json) => {
+      console.log('got orders from', url);
       socket.emit('orders', json);
     });
   });
 
   socket.on('get geofences', (msg) => {
-    const url = `${baseURL}/geofences?storeName=${msg}`
-    fetch(url).then(res => res.json()).then(json => {
+    url = `${baseURL}/geofences?storeName=${msg}`;
+    fetch(url).then((res) => res.json()).then((json) => {
+      console.log('got geofences from', url);
       socket.emit('geofences', json);
     });
   });

@@ -28,6 +28,10 @@
   <div class="container-fluid" style="height: 100%;">
     <div class="row" style="height: 99%;">
       <div class="col-md-3" id="nav-list" style="height: 100%">
+        <div id="nav" class="invisible w-100 d-inline-block text-center">
+          <a href="#!" onClick="onNavStores('Carmelit');"><a href="#!" onClick="onShowRange(600);">Carmelit</a><br>
+          <a href="#!" onClick="onNavRange(120);">2min</a> | <a href="#!" onClick="onNavRange(300);">5min</a> | <a href="#!" onClick="onNavRange(600);">10min</a>
+        </div>
         <div id="stores" class="h-100 w-100 d-inline-block overflow-auto p-1"></div>
       </div>
       <div class="col-md-9" id="map-view" style="height: 100%;">
@@ -38,11 +42,11 @@
 
   <script id="store-template" type="x-tmpl-mustache">
     <div class="media position-relative">
-      <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-        <div class="card-header">{{ location.name }}</div>
+      <div class="card text-white bg-primary mb-3 w-100">
+        <div class="card-header w-100">{{ location.name }}</div>
         <div class="card-body">
           <p class="card-text text-white">{{ location.address }}
-          <a href="#!" onClick="getOrders('{{ location.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+          <a href="#!" onClick="onGetOrders('{{ location.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
         </div>
       </div>
     </div>
@@ -51,7 +55,10 @@
   <script id="order-template" type="x-tmpl-mustache">
     <div class="media position-relative w-100">
       <div class="card text-white bg-primary mb-3 w-100">
-        <div class="card-header">Order# {{ order.orderId }}</div>
+        <!-- rotate(0) so the stretched-link within it is limited to just this block -->
+        <div class="card-header" style="transform: rotate(0);">
+          <a href="#!" onClick="onShowOrder('{{ order.orderId }}');" class="text-white stretched-link">Order# {{ order.orderId }}</a>
+        </div>
         <div class="card-body">
           <div class="row">
             <div class="col-6 align-middle">
@@ -61,7 +68,6 @@
               <button type="button" class="btn primary-color-dark btn-sm btn-block" onClick="closeOrder('{{ order.orderId }}');">Close</button>
             </div>
           </div>
-          <a href="#!" onClick="showOrder('{{ order.orderId }}');" class="text-white text-decoration-underline attr stretched-link"></a>
         </div>
       </div>
     </div>
@@ -69,8 +75,8 @@
 
   <script id="order-group-template" type="x-tmpl-mustache">
     <div id="range-{{ range.id }}">
-      <hr class="hr" style="background-color:{{ range.color }}" />
-      <p>Within {{ range.time }} min</p>
+      <hr class="hr" style="background-color:{{ range.color }};height:.5em;" />
+      <a href="#!" onClick="onShowRange('{{range.id}}');"><p class="text-center">Within {{ range.time }} min</p></a>
     </div>
   </script>
 
@@ -78,7 +84,7 @@
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/mdb.min.js"></script>
   <script src="js/socket.io.js"></script>
-  <script src="js/app.js"></script>
+  <script src="app.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo&v=weekly&callback=loadMap&map_ids=6a9eb25b0d956d9d"></script>
 </body>
 </html>
