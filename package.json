@@ -4,8 +4,8 @@
   "description": "Socket.IO server for orders",
   "main": "index.js",
   "scripts": {
-    "start": "npm run socket-server",
-    "dev": "npm run mock-server & npm run socket-server",
+    "start": "node index.js",
+    "dev": "npm run mock-server & env ORDERS_HOST=http://localhost:3000 npm run socket-server",
     "mock-server": "nodemon mock.js",
     "socket-server": "nodemon index.js",
     "lint": "npx eslint index.js mock.js static/app.js",
@@ -15,8 +15,9 @@
     "type": "git",
     "url": "git@gitlab.com:woolpert/cloud/demos/geoawareness/geoawareness-orders.git"
   },
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "node-fetch": "^2.6.0",

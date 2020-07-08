@@ -3,9 +3,8 @@ const fetch = require('node-fetch');
 
 const app = express();
 
-const port = 8000;
-const baseURL = 'http://localhost:3000';
-// const baseURL = ' https://geoawareness-api-bkejaovq4a-uw.a.run.app';
+const port = 8080;
+const baseURL = process.env.ORDERS_HOST;
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);

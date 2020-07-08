@@ -30,6 +30,16 @@ Edit these files.  The browser and server both use [socket.io](https://socket.io
 - Client UX is done with [Material Design Bootstrap](https://mdbootstrap.com/docs/)
 - Most everything else in `static` is from the bootstrap install.
 
+## Deploy
+
+Using App Engine Flex
+
+    gcloud app deploy --project geoawareness-sandbox
+
+And browse to
+
+    https://geoawareness-sandbox.wm.r.appspot.com
+
 ## Initial Setup (already completed)
 
 1. Get an API Key, authorize it for maps.
