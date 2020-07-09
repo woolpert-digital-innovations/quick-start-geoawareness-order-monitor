@@ -71,19 +71,19 @@ function renderStores(store) {
   const rendered = Mustache.render(template, { location: store });
   document.getElementById('stores').innerHTML += rendered;
 
-  const loc = { lat: store.location.latitude, lng: store.location.longitude };
-  const star = {
-    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
-    fillColor: 'blue',
-    fillOpacity: 0.8,
-    scale: 0.1,
-    strokeColor: 'black',
-    strokeWeight: 1.5,
-  };
   const marker = new google.maps.Marker({
-    position: loc,
+    position: {
+      lat: store.location.latitude,
+      lng: store.location.longitude,
+    },
     map,
-    icon: star,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 5,
+      strokeColor: '#0d47a1',
+      strokeOpacity: 1,
+      strokeWeight: 3,
+    },
   });
   marker.addListener('click', () => {
     onGetOrders(store.name);
@@ -108,6 +108,7 @@ function setExtentToStores() {
 
 function onGetOrders(id) {
   console.log('Getting orders for ', id);
+  socket.emit('get geofences', id);
   socket.emit('get orders', id);
   document.getElementById('nav').classList.remove('invisible');
 }
@@ -122,12 +123,17 @@ function onNavStores(id) {
   setExtentToStores();
 }
 
+function onShowOrder(id) {
+  // if order and store distance is <100 ft, zoom to th
+  // zoom to extent of order and store
+}
+
 function onShowRange(range) {
   // recenter the map to isochrone extents
   let index = 0;
-  if (range === 120) {
+  if (parseInt(range) === 120) {
     index = 2;
-  } else if (range === 300) {
+  } else if (parseInt(range) === 300) {
     index = 1;
   }
 
@@ -160,16 +166,22 @@ socket.on('connected', (msg) => {
 });
 
 socket.on('orders', (msg) => {
+  console.log('got orders', msg);
+
   if (msg == null || msg.length === 0) {
     // alert no orders for this store
-  } else {
-    console.log('got orders', msg);
+  }
 
-    // replace list of stores with orders
-    // show the order driver locations on the map
-    const locations = [];
-    msg.forEach((order) => {
-      switch (order.latestEvent.innnerGeofence) {
+  // clear out existing orders and data
+  orderGroups.forEach((group) => {
+    group.locations = [];
+  });
+
+  // replace list of stores with orders
+  // show the order driver locations on the map
+  msg.forEach((order) => {
+    if (order.latestEvent) {
+      switch (order.latestEvent.innerGeofence.range) {
         case 120:
           orderGroups[0].locations.push(order);
           break;
@@ -187,7 +199,6 @@ socket.on('orders', (msg) => {
         lat: order.latestEvent.eventLocation.latitude,
         lng: order.latestEvent.eventLocation.longitude,
       };
-      locations.push(loc);
 
       new google.maps.Marker({
         position: loc,
@@ -202,55 +213,53 @@ socket.on('orders', (msg) => {
           strokeWeight: 0.5,
         },
       });
+    }
+  });
+
+  // sort them by most recently received
+  orderGroups.forEach((list) => {
+    list.locations.sort((a, b) => {
+      const aDate = new Date(a.latestEvent.eventTimestamp);
+      const bDate = new Date(b.latestEvent.eventTimestamp);
+      return aDate - bDate;
     });
+  });
 
-    // sort them by most recently received
-    orderGroups.forEach((list) => {
-      list.locations.sort((a, b) => {
-        const aDate = new Date(a.latestEvent.eventTimestamp);
-        const bDate = new Date(b.latestEvent.eventTimestamp);
-        return aDate - bDate;
-      });
+  // render the isochrone grouping headers
+  document.getElementById('stores').innerHTML = '';
+  orderGroups.forEach((list) => {
+    const template = document.getElementById('order-group-template').innerHTML;
+    const rendered = Mustache.render(template, {
+      range: {
+        id: list.range,
+        color: list.color,
+        time: list.minutes,
+      },
     });
+    document.getElementById('stores').innerHTML += rendered;
+  });
 
-    // render the orders by their isocrhone grouping
-    document.getElementById('stores').innerHTML = '';
-    orderGroups.forEach((list) => {
-      const template = document.getElementById('order-group-template').innerHTML;
-      const rendered = Mustache.render(template, {
-        range: {
-          id: list.range,
-          color: list.color,
-          time: list.minutes,
-        },
-      });
-      document.getElementById('stores').innerHTML += rendered;
+  // render each order
+  orderGroups.forEach((list) => {
+    if (list.locations.length === 0) {
+      const template = document.getElementById('order-empty-template').innerHTML;
+      const rendered = Mustache.render(template);
+      document.getElementById(`range-${list.range}`).innerHTML += rendered;
+    }
+
+    list.locations.forEach((location) => {
+      location.date = new Date(location.latestEvent.eventTimestamp);
+      location.date = location.date.toLocaleTimeString();
+
+      // render the order card
+      if (!location.latestEvent.innerGeofence.range) {
+        location.latestEvent.innerGeofence.range = 601;
+      }
+      const template = document.getElementById('order-template').innerHTML;
+      const rendered = Mustache.render(template, { order: location });
+      document.getElementById(`range-${list.range}`).innerHTML += rendered;
     });
-
-    orderGroups.forEach((list) => {
-      list.locations.forEach((location) => {
-        location.date = new Date(location.latestEvent.eventTimestamp);
-        location.date = location.date.toLocaleTimeString();
-
-        // render the order card
-        if (!location.latestEvent.innerGeofence.range) {
-          location.latestEvent.innerGeofence.range = 601;
-        }
-        const template = document.getElementById('order-template').innerHTML;
-        const rendered = Mustache.render(template, { order: location });
-        document.getElementById(`range-${location.latestEvent.innerGeofence.range}`).innerHTML += rendered;
-      });
-    });
-
-    socket.emit('get geofences', msg.storeName);
-
-    // set extent to the orders
-    // var bounds = new google.maps.LatLngBounds();
-    // locations.forEach(loc => {
-    //  bounds.extend(loc);
-    // });
-    // map.fitBounds(bounds);
-  }
+  });
 });
 
 socket.on('geofences', (msg) => {

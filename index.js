@@ -1,10 +1,10 @@
 const express = require('express');
 const fetch = require('node-fetch');
 
-const app = express();
-
-const port = 8080;
+const app     = express();
+const port    = 8080;
 const baseURL = process.env.ORDERS_HOST;
+const key     = process.env.API_KEY;
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('a user connected');
 
-  let url = `${baseURL}/stores`;
+  let url = `${baseURL}/stores?key=${key}`;
   fetch(url).then((res) => res.json()).then((json) => {
     console.log('got stores from', url);
     socket.emit('connected', json);
@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('get orders', (msg) => {
-    url = `${baseURL}/orders?storeName=${msg}`;
+    url = `${baseURL}/orders?storeName=${msg}&key=${key}`;
     fetch(url).then((res) => res.json()).then((json) => {
       console.log('got orders from', url);
       socket.emit('orders', json);
@@ -37,13 +37,19 @@ io.on('connection', (socket) => {
   });
 
   socket.on('get geofences', (msg) => {
-    url = `${baseURL}/geofences?storeName=${msg}`;
+    url = `${baseURL}/geofences?storeName=${msg}&key=${key}`;
     fetch(url).then((res) => res.json()).then((json) => {
       console.log('got geofences from', url);
       socket.emit('geofences', json);
     });
   });
 });
+
+function pullOrders() {
+  console.log('Cant stop me now!');
+}
+
+setInterval(pullOrders, 3000);
 
 http.listen(port, () => {
   console.log(`socker server listening on *:${port}`);

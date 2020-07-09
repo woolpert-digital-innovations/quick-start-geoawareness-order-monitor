@@ -32,9 +32,15 @@ Edit these files.  The browser and server both use [socket.io](https://socket.io
 
 ## Deploy
 
-Using App Engine Flex
+### Sandbox
 
-    gcloud app deploy --project geoawareness-sandbox
+    gcloud app deploy app-sbx.yaml --project geoawareness-sandbox
+
+### Production
+
+    gcloud app deploy app.yaml --project geoawareness-sandbox
+
+### Browse
 
 And browse to
 

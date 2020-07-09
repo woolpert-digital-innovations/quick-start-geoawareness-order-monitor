@@ -2,7 +2,7 @@ runtime: nodejs
 env: flex
 
 env_variables:
-  ORDERS_HOST: "https://api.geoawareness.woolpert.dev"
+  ORDERS_HOST: "https://api-sbx.geoawareness.woolpert.dev"
   API_KEY: "AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo"
 
 # Keep it small and cheap

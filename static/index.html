@@ -52,12 +52,18 @@
     </div>
   </script>
 
+  <script id="order-empty-template" type="x-tmpl-mustache">
+    <div class="media position-relative w-100">
+      No Orders
+    </div>
+  </script>
+
   <script id="order-template" type="x-tmpl-mustache">
     <div class="media position-relative w-100">
       <div class="card text-white bg-primary mb-3 w-100">
         <!-- rotate(0) so the stretched-link within it is limited to just this block -->
         <div class="card-header" style="transform: rotate(0);">
-          <a href="#!" onClick="onShowOrder('{{ order.orderId }}');" class="text-white stretched-link">Order# {{ order.orderId }}</a>
+          <a href="#!" onClick="onShowOrder('{{ order.orderId }}');" class="text-white stretched-link">{{ order.orderId }}</a>
         </div>
         <div class="card-body">
           <div class="row">

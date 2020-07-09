@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "npm run mock-server & env ORDERS_HOST=http://localhost:3000 npm run socket-server",
+    "dev-deployed": "npm run mock-server & env ORDERS_HOST=https://api-sbx.geoawareness.woolpert.dev env API_KEY=AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo npm run socket-server",
     "mock-server": "nodemon mock.js",
     "socket-server": "nodemon index.js",
     "lint": "npx eslint index.js mock.js static/app.js",
