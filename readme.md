@@ -36,6 +36,10 @@ Edit these files.  The browser and server both use [socket.io](https://socket.io
 
     gcloud app deploy app-sbx.yaml --project geoawareness-sandbox
 
+### Staging
+
+    gcloud app deploy app-stg.yaml --project geoawareness-staging
+
 ### Production
 
     gcloud app deploy app.yaml --project geoawareness-sandbox

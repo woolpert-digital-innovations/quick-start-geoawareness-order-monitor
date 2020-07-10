@@ -4,7 +4,7 @@ env: flex
 env_variables:
   ORDERS_HOST: "https://api-sbx.geoawareness.woolpert.dev"
   API_KEY: "AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo"
-  PULL_INTERVAL_MS: 3000
+  PULL_INTERVAL_MS: 2000
 
 # Keep it small and cheap
 manual_scaling:

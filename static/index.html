@@ -71,7 +71,7 @@
               <p class="card-text text-white align-middle">{{ order.date }}</p>
             </div>
             <div class="col-6">
-              <button type="button" class="btn primary-color-dark btn-sm btn-block" onClick="closeOrder('{{ order.orderId }}');">Close</button>
+              <button type="button" class="btn primary-color-dark btn-sm btn-block" onClick="onCloseOrder('{{ order.orderId }}', '{{ order.storeName }}');">Close</button>
             </div>
           </div>
         </div>

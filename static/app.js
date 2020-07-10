@@ -146,6 +146,10 @@ function onShowRange(range) {
   map.fitBounds(bounds);
 }
 
+function onCloseOrder(orderId, storeName) {
+  socket.emit('close order', { orderId, storeName });
+}
+
 //
 //
 // Scocket.IO Events
@@ -164,7 +168,6 @@ socket.on('connected', (msg) => {
 
   setExtentToStores();
 });
-
 
 socket.on('orders', (msg) => {
   console.log('got orders', msg);
@@ -185,7 +188,9 @@ socket.on('orders', (msg) => {
   });
   orderMarkers = [];
   msg.forEach((order) => {
-    if (order.latestEvent) {
+    if (order.latestEvent && !order.latestEvent.innerGeofence) {
+      orderGroups[3].locations.push(order);
+    } else if (order.latestEvent) {
       switch (order.latestEvent.innerGeofence.range) {
         case 120:
           orderGroups[0].locations.push(order);
@@ -199,25 +204,6 @@ socket.on('orders', (msg) => {
         default:
           orderGroups[3].locations.push(order);
       }
-
-      const loc = {
-        lat: order.latestEvent.eventLocation.latitude,
-        lng: order.latestEvent.eventLocation.longitude,
-      };
-
-      orderMarkers.push(new google.maps.Marker({
-        position: loc,
-        map,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 3,
-          fillColor: 'black',
-          strokeColor: 'grey',
-          fillOpacity: 0.8,
-          strokeOpacity: 0.5,
-          strokeWeight: 0.5,
-        },
-      }));
     }
   });
 
@@ -244,25 +230,50 @@ socket.on('orders', (msg) => {
     document.getElementById('stores').innerHTML += rendered;
   });
 
-  // render each order
   orderGroups.forEach((list) => {
-    if (list.locations.length === 0) {
+    // indicate to user no orders for this isochrone range
+    let emptyGroup = true;
+    list.locations.forEach((order) => {
+      if (!order.status.includes('closed')) {
+        emptyGroup = false;
+      }
+    });
+    if (emptyGroup) {
       const template = document.getElementById('order-empty-template').innerHTML;
       const rendered = Mustache.render(template);
       document.getElementById(`range-${list.range}`).innerHTML += rendered;
     }
 
+    // render each order
     list.locations.forEach((location) => {
-      location.date = new Date(location.latestEvent.eventTimestamp);
-      location.date = location.date.toLocaleTimeString();
+      if (!location.status.includes('closed')) {
+        location.date = new Date(location.latestEvent.eventTimestamp);
+        location.date = location.date.toLocaleTimeString();
+        const loc = {
+          lat: location.latestEvent.eventLocation.latitude,
+          lng: location.latestEvent.eventLocation.longitude,
+        };
 
-      // render the order card
-      if (!location.latestEvent.innerGeofence.range) {
-        location.latestEvent.innerGeofence.range = 601;
+        // create a map marker
+        orderMarkers.push(new google.maps.Marker({
+          position: loc,
+          map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 3,
+            fillColor: 'black',
+            strokeColor: 'grey',
+            fillOpacity: 0.8,
+            strokeOpacity: 0.5,
+            strokeWeight: 0.5,
+          },
+        }));
+
+        // render the order card
+        const template = document.getElementById('order-template').innerHTML;
+        const rendered = Mustache.render(template, { order: location });
+        document.getElementById(`range-${list.range}`).innerHTML += rendered;
       }
-      const template = document.getElementById('order-template').innerHTML;
-      const rendered = Mustache.render(template, { order: location });
-      document.getElementById(`range-${list.range}`).innerHTML += rendered;
     });
   });
 });
@@ -303,4 +314,9 @@ socket.on('geofences', (msg) => {
   });
 
   map.fitBounds(bounds);
+});
+
+socket.on('closed', (msg) => {
+  // nothing to do on the client
+  console.log('I closed', msg);
 });

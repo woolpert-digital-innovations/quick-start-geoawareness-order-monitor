@@ -5,7 +5,7 @@ const app      = express();
 const port     = 8080;
 const baseURL  = process.env.ORDERS_HOST;
 const key      = process.env.API_KEY;
-const interval = process.env.PULL_INTERVAL_MS || 3000;
+const interval = process.env.PULL_INTERVAL_MS || 2000;
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -35,6 +35,23 @@ io.on('connection', (socket) => {
     fetch(url).then((res) => res.json()).then((json) => {
       console.log('got geofences from', url);
       socket.emit('geofences', json);
+    });
+  });
+
+  socket.on('close order', (msg) => {
+    url = `${baseURL}/orders/${msg.orderId}?key=${key}`;
+    const options = {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: ['closed'],
+        storeName: msg.storeName,
+      }),
+    };
+    fetch(url, options).then((res) => res).then((res) => {
+      // check for a 204, ideally
+      console.log('closed order at', url);
+      socket.emit('closed', msg);
     });
   });
 });
