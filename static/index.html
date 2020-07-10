@@ -20,7 +20,7 @@
       width: 100%; height: 100%;
     }
     .flash {
-      background-color: #e3f2fd;
+      background-color: #0d47a1;
     }
   </style>
   <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVnheXh1N4vXmza42P_z2hbDyeRfJr9yo&callback=initMap&libraries=&v=weekly"></script>-->
@@ -30,14 +30,14 @@
 <body>
   <div class="container-fluid" style="height: 100%;">
     <div class="row" style="height: 99%;">
-      <div class="col-md-3" id="nav-list" style="height: 100%">
+      <div class="col-md-4" id="nav-list" style="height: 100%">
         <div id="nav" class="invisible w-100 d-inline-block text-center">
           <a href="#!" onClick="onNavStores('Carmelit');"><a href="#!" onClick="onShowRange(600);">Carmelit</a><br>
           <a href="#!" onClick="onNavRange(120);">2min</a> | <a href="#!" onClick="onNavRange(300);">5min</a> | <a href="#!" onClick="onNavRange(600);">10min</a>
         </div>
         <div id="stores" class="h-100 w-100 d-inline-block overflow-auto p-1"></div>
       </div>
-      <div class="col-md-9" id="map-view" style="height: 100%;">
+      <div class="col-md-8" id="map-view" style="height: 100%;">
         <div id="map-container" class="z-depth-1-half map-container" style="height: 100%"></div>
       </div>
     </div>
@@ -56,26 +56,21 @@
   </script>
 
   <script id="order-empty-template" type="x-tmpl-mustache">
-    <div class="media position-relative w-100">
-      No Orders
+    <div class="w-100">
+      <div class="card w-100">
+        <div class="card-body text-center">No Orders</div>
+      </div>
     </div>
   </script>
 
   <script id="order-template" type="x-tmpl-mustache">
-    <div class="media position-relative w-100">
-      <div class="card text-white bg-primary mb-3 w-100">
-        <!-- rotate(0) so the stretched-link within it is limited to just this block -->
-        <div class="card-header" id="order-{{ order.orderId }}" style="transform: rotate(0);">
-          <a href="#!" onClick="onShowOrder('{{ order.orderId }}');" class="text-white stretched-link">{{ order.orderId }}</a>
-        </div>
-        <div class="card-body">
+    <div class="w-100">
+      <div class="card w-100">
+        <div class="card-body" id="order-{{ order.orderId }}" onClick="onShowOrder('{{ order.orderId }}');">
           <div class="row">
-            <div class="col-6 align-middle">
-              <p class="card-text text-white align-middle">{{ order.date }}</p>
-            </div>
-            <div class="col-6">
-              <button type="button" class="btn primary-color-dark btn-sm btn-block" onClick="onCloseOrder('{{ order.orderId }}', '{{ order.storeName }}');">Close</button>
-            </div>
+            <div class="col-3">{{ order.orderId }}</div>
+            <div class="col-4">{{ order.date }}</div>
+            <div class="col-5"><button type="button" class="btn btn-sm btn-block" onClick="onCloseOrder('{{ order.orderId }}', '{{ order.storeName }}');">Close</button></div>
           </div>
         </div>
       </div>
@@ -84,8 +79,11 @@
 
   <script id="order-group-template" type="x-tmpl-mustache">
     <div id="range-{{ range.id }}">
-      <hr class="hr" style="background-color:{{ range.color }};height:.5em;" />
-      <a href="#!" onClick="onShowRange('{{range.id}}');"><p class="text-center">Within {{ range.time }} min</p></a>
+      <div class="card text-white text-center bg-primary mb-0 mt-3 w-100" style="transform: rotate(0);">
+        <div class="card-body">
+          <a href="#!" onClick="onShowRange('{{range.id}}');" class="text-white stretched-link">Within {{ range.time }} min</a>
+        </div>
+      </div>
     </div>
   </script>
 

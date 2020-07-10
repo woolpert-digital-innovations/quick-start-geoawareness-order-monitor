@@ -297,10 +297,8 @@ socket.on('orders', (msg) => {
             alertOrder((count, orderId) => {
               const orderElement = document.getElementById(`order-${orderId}`);
               if (count % 2 === 0) {
-                console.log('flash on');
                 orderElement.classList.add('flash');
               } else {
-                console.log('flash off');
                 orderElement.classList.remove('flash');
               }
             }, 100, 8, order.orderId);
