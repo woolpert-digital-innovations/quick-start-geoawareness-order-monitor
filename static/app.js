@@ -210,8 +210,8 @@ socket.on('orders', (msg) => {
   // sort them by most recently received
   orderGroups.forEach((list) => {
     list.locations.sort((a, b) => {
-      const aDate = new Date(a.latestEvent.eventTimestamp);
-      const bDate = new Date(b.latestEvent.eventTimestamp);
+      const aDate = new Date(a.latestEvent.eventTimestamp * 1000);
+      const bDate = new Date(b.latestEvent.eventTimestamp * 1000);
       return aDate - bDate;
     });
   });
@@ -247,7 +247,7 @@ socket.on('orders', (msg) => {
     // render each order
     list.locations.forEach((location) => {
       if (!location.status.includes('closed')) {
-        location.date = new Date(location.latestEvent.eventTimestamp);
+        location.date = new Date(location.latestEvent.eventTimestamp * 1000);
         location.date = location.date.toLocaleTimeString();
         const loc = {
           lat: location.latestEvent.eventLocation.latitude,
@@ -302,7 +302,7 @@ socket.on('geofences', (msg) => {
     layer.setStyle({
       fillColor: colors[i],
       title: msg[i].range,
-      strokeWeight: 0.5,
+      strokeWeight: 0.1,
     });
     // recenter the map to isochrone extents
     layer.forEach((feature) => {
