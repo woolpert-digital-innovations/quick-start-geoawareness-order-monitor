@@ -101,6 +101,16 @@ function setExtentToStores() {
   map.fitBounds(bounds);
 }
 
+function alertOrder(callback, delay, reps, orderId) {
+  let x = 0;
+  const intervalId = window.setInterval(() => {
+    callback(x, orderId);
+    if (++x === reps) {
+      window.clearInterval(intervalId);
+    }
+  }, delay);
+}
+
 //
 //
 // UI Events
@@ -177,7 +187,11 @@ socket.on('orders', (msg) => {
   }
 
   // clear out existing orders and data
+  const previousOrders = [];
   orderGroups.forEach((group) => {
+    group.locations.forEach((item) => {
+      previousOrders.push(item);
+    });
     group.locations = [];
   });
 
@@ -229,7 +243,6 @@ socket.on('orders', (msg) => {
     });
     document.getElementById('stores').innerHTML += rendered;
   });
-
   orderGroups.forEach((list) => {
     // indicate to user no orders for this isochrone range
     let emptyGroup = true;
@@ -273,6 +286,26 @@ socket.on('orders', (msg) => {
         const template = document.getElementById('order-template').innerHTML;
         const rendered = Mustache.render(template, { order: location });
         document.getElementById(`range-${list.range}`).innerHTML += rendered;
+
+        // alert the user as the order enters the inner most isochrone
+        previousOrders.forEach((order) => {
+          if (order.orderId === location.orderId
+              && order.latestEvent && order.latestEvent.innerGeofence
+              && order.latestEvent.innerGeofence.range === 300
+              && list.range === 120) {
+            // callback function for flashing the order
+            alertOrder((count, orderId) => {
+              const orderElement = document.getElementById(`order-${orderId}`);
+              if (count % 2 === 0) {
+                console.log('flash on');
+                orderElement.classList.add('flash');
+              } else {
+                console.log('flash off');
+                orderElement.classList.remove('flash');
+              }
+            }, 100, 8, order.orderId);
+          }
+        });
       }
     });
   });

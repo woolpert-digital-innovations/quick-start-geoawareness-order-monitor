@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
 // emits orders to all connected sockets
 function pullOrders() {
   // Ideally, this should know of all the stores and emit to all namespaces and not Carmelit only
-  const url = `${baseURL}/orders?storeName=Carmelit&key=${key}`;
+  const url = `${baseURL}/orders?storeName=Carmelit&status=open&key=${key}`;
   fetch(url).then((res) => res.json()).then((json) => {
     io.to('orders/Carmelit').emit('orders', json);
   });
