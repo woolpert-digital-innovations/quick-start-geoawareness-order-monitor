@@ -7,6 +7,7 @@ const socket = io();
 //
 
 let map = null;
+let orderMarkers = [];
 const colors = ['#bbdefb', '#2196f3', '#0d47a1', 'grey'];
 const geoFences = [];
 const stores = [];
@@ -109,7 +110,6 @@ function setExtentToStores() {
 function onGetOrders(id) {
   console.log('Getting orders for ', id);
   socket.emit('get geofences', id);
-  socket.emit('get orders', id);
   document.getElementById('nav').classList.remove('invisible');
 }
 
@@ -165,6 +165,7 @@ socket.on('connected', (msg) => {
   setExtentToStores();
 });
 
+
 socket.on('orders', (msg) => {
   console.log('got orders', msg);
 
@@ -179,6 +180,10 @@ socket.on('orders', (msg) => {
 
   // replace list of stores with orders
   // show the order driver locations on the map
+  orderMarkers.forEach((marker) => {
+    marker.setMap(null);
+  });
+  orderMarkers = [];
   msg.forEach((order) => {
     if (order.latestEvent) {
       switch (order.latestEvent.innerGeofence.range) {
@@ -200,7 +205,7 @@ socket.on('orders', (msg) => {
         lng: order.latestEvent.eventLocation.longitude,
       };
 
-      new google.maps.Marker({
+      orderMarkers.push(new google.maps.Marker({
         position: loc,
         map,
         icon: {
@@ -212,7 +217,7 @@ socket.on('orders', (msg) => {
           strokeOpacity: 0.5,
           strokeWeight: 0.5,
         },
-      });
+      }));
     }
   });
 
