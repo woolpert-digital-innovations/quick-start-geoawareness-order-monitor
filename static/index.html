@@ -30,15 +30,15 @@
 <body>
   <div class="container-fluid" style="height: 100%;">
     <div class="row" style="height: 99%;">
-      <div class="col-md-4" id="nav-list" style="height: 100%">
+      <div class="col-md-4 h-100" id="nav-list">
         <div id="nav" class="invisible w-100 d-inline-block text-center">
-          <a href="#!" onClick="onNavStores('Carmelit');"><a href="#!" onClick="onShowRange(600);">Carmelit</a><br>
-          <a href="#!" onClick="onNavRange(120);">2min</a> | <a href="#!" onClick="onNavRange(300);">5min</a> | <a href="#!" onClick="onNavRange(600);">10min</a>
+          <h3 class="text-left"><a href="#!" onClick="onShowRange(600);">Carmelit</a></h3>
+          <!--<a href="#!" onClick="onNavRange(120);">2min</a> | <a href="#!" onClick="onNavRange(300);">5min</a> | <a href="#!" onClick="onNavRange(600);">10min</a>-->
         </div>
-        <div id="stores" class="h-100 w-100 d-inline-block overflow-auto p-1"></div>
+        <div id="stores" class="h-99 w-100 d-inline-block overflow-auto p-1"></div>
       </div>
-      <div class="col-md-8" id="map-view" style="height: 100%;">
-        <div id="map-container" class="z-depth-1-half map-container" style="height: 100%"></div>
+      <div class="col-md-8 h-100" id="map-view">
+        <div id="map-container" class="z-depth-1-half map-container h-100"></div>
       </div>
     </div>
   </div>
