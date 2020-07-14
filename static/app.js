@@ -80,7 +80,7 @@ function renderStores(store) {
     map,
     icon: {
       path: google.maps.SymbolPath.CIRCLE,
-      scale: 5,
+      scale: 8,
       strokeColor: '#0d47a1',
       strokeOpacity: 1,
       strokeWeight: 3,
@@ -273,12 +273,12 @@ socket.on('orders', (msg) => {
           map,
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
-            scale: 3,
-            fillColor: 'black',
-            strokeColor: 'grey',
+            scale: 6,
+            fillColor: 'orange',
+            strokeColor: 'black',
             fillOpacity: 0.8,
-            strokeOpacity: 0.5,
-            strokeWeight: 0.5,
+            strokeOpacity: 0.9,
+            strokeWeight: 0.8,
           },
         }));
 
@@ -301,7 +301,7 @@ socket.on('orders', (msg) => {
               } else {
                 orderElement.classList.remove('flash');
               }
-            }, 100, 8, order.orderId);
+            }, 200, 12, order.orderId); // ms delay, how many times, order id
           }
         });
       }
