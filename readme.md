@@ -18,7 +18,7 @@ This is a NodeJS web server that serves
 
        npm start
 
-1. Open the site in the browser http://localhost:3000
+1. Open the site in the browser http://localhost:8080
 
 ## Develop
 
