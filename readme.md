@@ -26,7 +26,7 @@ Edit these files.  The browser and server both use [socket.io](https://socket.io
 
 - Server code is in `index.js`
 - Client HTML is in `static/index.html` and uses Mustache for inline HTML templating
-- Client code is in `static/js/app.js` and uses POJS (Plain Old JavaScript)
+- Client code is in `static/app.js` and uses POJS (Plain Old JavaScript)
 - Client UX is done with [Material Design Bootstrap](https://mdbootstrap.com/docs/)
 - Most everything else in `static` is from the bootstrap install.
 
