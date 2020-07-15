@@ -41,11 +41,18 @@
   <body>
     <div class="container-fluid" style="height: 100%;">
       <div class="row">
-        <h1>
-          <a href="./index.html">So Inclined Restaurants</a>
-        </h1>
+        <div class="col-md-9">
+          <h1>
+            <a href="./index.html">So Inclined Restaurants</a>
+          </h1>
+          <p>Order Monitor</p>
+        </div>
+        <div class="col-md-3">
+          <a href="https://woolpert.com" target="blank">
+            <img src="./img/svg/woolpert.svg" height="75.33" width="240.6" />
+          </a>
+        </div>
       </div>
-      <p>Order Monitor</p>
       <hr />
       <div id="store-page-header" class="row"></div>
       <div class="row" style="height: 100%;">
@@ -56,10 +63,7 @@
           ></div>
         </div>
         <div class="col-md-7 h-100" id="map-view">
-          <div
-            id="map-container"
-            class="z-depth-1-half map-container h-100"
-          ></div>
+          <div id="map-container" class="z-depth-1-half h-100"></div>
         </div>
       </div>
     </div>
@@ -91,7 +95,10 @@
     <script id="order-template" type="x-tmpl-mustache">
       <div class="w-100">
         <div class="card w-100">
-          <div class="card-body" id="order-{{ order.orderId }}" onClick="onShowOrder('{{ order.orderId }}');">
+          <div class="card-body" id="order-{{ order.orderId }}"
+            onMouseOver="onHoverOrder('{{ order.orderId }}');"
+            onMouseOver="onHoverOrder();"
+          >
             <div class="row">
               <div class="col-4">{{ order.orderId }}</div>
               <div class="col-4">{{ order.date }}</div>
@@ -106,7 +113,11 @@
 
     <script id="order-group-template" type="x-tmpl-mustache">
       <div id="range-{{ range.id }}">
-        <h5 class="card text-center text-white bg-primary mb-0 mt-3 w-100" style="transform: rotate(0);">
+        <h5 class="card text-center text-white bg-primary mb-0 mt-3 w-100"
+          style="transform: rotate(0);"
+            onMouseOver="onHoverOrderGroup('{{ range.id }}');"
+            onMouseOut="onHoverOrderGroup();"
+          >
           <div class="card-body">
             <a href="#!" onClick="onShowRange('{{range.id}}');" class="text-white stretched-link">{{ range.time }} min</a>
           </div>
