@@ -67,9 +67,9 @@ function loadMap() {
   map = new google.maps.Map(document.getElementById('map-container'), options);
 }
 
-function renderStores(store) {
+function renderStore(store) {
   const template = document.getElementById('store-template').innerHTML;
-  const rendered = Mustache.render(template, { location: store });
+  const rendered = Mustache.render(template, { store: store });
   document.getElementById('stores').innerHTML += rendered;
 
   const marker = new google.maps.Marker({
@@ -81,9 +81,9 @@ function renderStores(store) {
     icon: {
       path: google.maps.SymbolPath.CIRCLE,
       scale: 8,
-      strokeColor: '#0d47a1',
-      strokeOpacity: 1,
-      strokeWeight: 3,
+      fillColor: '#0d47a1',
+      fillOpacity: 0.9,
+      strokeWeight: 0,
     },
   });
   marker.addListener('click', () => {
@@ -92,7 +92,6 @@ function renderStores(store) {
 }
 
 function setExtentToStores() {
-  // set extent to the store locations
   const bounds = new google.maps.LatLngBounds();
   stores.forEach((store) => {
     const latlng = new google.maps.LatLng(store.location.latitude, store.location.longitude);
@@ -117,10 +116,19 @@ function alertOrder(callback, delay, reps, orderId) {
 //
 //
 
-function onGetOrders(id) {
-  console.log('Getting orders for ', id);
-  socket.emit('get geofences', id);
-  document.getElementById('nav').classList.remove('invisible');
+function onGetOrders(storeName) {
+  const store = stores.find(store => store.name === storeName);
+  console.log('Getting orders for ', store.name);
+  socket.emit('get geofences', store.name);
+
+  document.getElementById('stores').innerHTML = '';
+  // render store page header
+  const template = document.getElementById('store-page-header-template').innerHTML;
+  const rendered = Mustache.render(template, { store: store });
+  document.getElementById('store-page-header').innerHTML += rendered;
+
+  map.setCenter(new google.maps.LatLng(store.location.latitude, store.location.longitude));
+  map.setZoom(11);
 }
 
 function onNavRange(range) {
@@ -134,6 +142,7 @@ function onNavStores(id) {
 }
 
 function onShowOrder(id) {
+  console.log('orderId', id);
   // if order and store distance is <100 ft, zoom to th
   // zoom to extent of order and store
 }
@@ -173,14 +182,14 @@ socket.on('connected', (msg) => {
   document.getElementById('stores').innerHTML = '';
   msg.forEach((element) => {
     stores.push(element);
-    renderStores(element);
+    renderStore(element);
   });
 
   setExtentToStores();
 });
 
 socket.on('orders', (msg) => {
-  console.log('got orders', msg);
+  console.log('orders', msg);
 
   if (msg == null || msg.length === 0) {
     // alert no orders for this store
@@ -243,6 +252,7 @@ socket.on('orders', (msg) => {
     });
     document.getElementById('stores').innerHTML += rendered;
   });
+
   orderGroups.forEach((list) => {
     // indicate to user no orders for this isochrone range
     let emptyGroup = true;
@@ -258,63 +268,72 @@ socket.on('orders', (msg) => {
     }
 
     // render each order
-    list.locations.forEach((location) => {
-      if (!location.status.includes('closed')) {
-        location.date = new Date(location.latestEvent.eventTimestamp * 1000);
-        location.date = location.date.toLocaleTimeString();
-        const loc = {
-          lat: location.latestEvent.eventLocation.latitude,
-          lng: location.latestEvent.eventLocation.longitude,
-        };
-
-        // create a map marker
-        orderMarkers.push(new google.maps.Marker({
-          position: loc,
-          map,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 6,
-            fillColor: 'orange',
-            strokeColor: 'black',
-            fillOpacity: 0.8,
-            strokeOpacity: 0.9,
-            strokeWeight: 0.8,
-          },
-        }));
-
-        // render the order card
-        const template = document.getElementById('order-template').innerHTML;
-        const rendered = Mustache.render(template, { order: location });
-        document.getElementById(`range-${list.range}`).innerHTML += rendered;
-
-        // alert the user as the order enters the inner most isochrone
-        previousOrders.forEach((order) => {
-          if (order.orderId === location.orderId
-              && order.latestEvent && order.latestEvent.innerGeofence
-              && order.latestEvent.innerGeofence.range === 300
-              && list.range === 120) {
-            // callback function for flashing the order
-            alertOrder((count, orderId) => {
-              const orderElement = document.getElementById(`order-${orderId}`);
-              if (count % 2 === 0) {
-                orderElement.classList.add('flash');
-              } else {
-                orderElement.classList.remove('flash');
-              }
-            }, 200, 12, order.orderId); // ms delay, how many times, order id
-          }
-        });
+    const openOrderLocations = list.locations.filter(location => !location.status.includes('closed'));
+    openOrderLocations.forEach((location) => {
+      const lastPing = new Date(location.latestEvent.eventTimestamp * 1000);
+      const secondsAgo = (new Date() - lastPing) / 1000;
+      if (secondsAgo < 5) {
+        location.date = 'now';
+      } else if (secondsAgo / 60 < 1) {
+        location.date = Math.round(secondsAgo) + ' sec ago';
+      } else if (secondsAgo / 3600 < 1) {
+        location.date = (secondsAgo / 60).toFixed(1) + ' min ago';
+      } else {
+        location.date = (secondsAgo / 3600).toFixed(1) + ' hrs ago';
       }
+      const loc = {
+        lat: location.latestEvent.eventLocation.latitude,
+        lng: location.latestEvent.eventLocation.longitude,
+      };
+
+      // create a map marker
+      orderMarkers.push(new google.maps.Marker({
+        position: loc,
+        map,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 5,
+          fillColor: '#bf360c',
+          fillOpacity: 0.9,
+          strokeWeight: 0.5,
+        },
+      }));
+
+      // render the order card
+      const template = document.getElementById('order-template').innerHTML;
+      const rendered = Mustache.render(template, { order: location });
+      document.getElementById(`range-${list.range}`).innerHTML += rendered;
+
+      // alert the user as the order enters the inner most isochrone
+      previousOrders.forEach((order) => {
+        if (order.orderId === location.orderId
+          && order.latestEvent && order.latestEvent.innerGeofence
+          && order.latestEvent.innerGeofence.range === 300
+          && list.range === 120) {
+          // callback function for flashing the order
+          alertOrder((count, orderId) => {
+            const orderElement = document.getElementById(`order-${orderId}`);
+            if (count % 2 === 0) {
+              orderElement.classList.add('flash');
+            } else {
+              orderElement.classList.remove('flash');
+            }
+          }, 400, 15, order.orderId); // ms delay, how many times, order id
+        }
+      });
     });
   });
 });
 
 socket.on('geofences', (msg) => {
+  if (!msg || !msg.length) {
+    return;
+  }
   if (geoFences.length > 0) {
     // don't recreate them
     return;
   }
-  console.log('got geofences', msg);
+  console.log('geofences', msg);
   const bounds = new google.maps.LatLngBounds();
   const layers = [];
   const shapes = [];
