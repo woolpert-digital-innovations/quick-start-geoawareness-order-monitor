@@ -106,7 +106,7 @@ function onHoverOrder(id) {
     ordersLayer.overrideStyle(feature, {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 6,
+        scale: 7,
         fillColor: '#bf360c',
         fillOpacity: 0.9,
         strokeColor: '#fcfda1',
@@ -121,9 +121,7 @@ function onHoverOrderGroup(id) {
   const feature = geofencesLayer.getFeatureById(id);
   if (feature) {
     geofencesLayer.overrideStyle(feature, {
-      fillOpacity: 0.75,
-      strokeColor: '#0d47a1',
-      strokeWeight: 1.0,
+      fillColor: '#fcfda1',
     });
   }
 }
@@ -336,7 +334,7 @@ function loadMap() {
   const options = {
     center: location,
     zoom: 0,
-    mapId: '6a9eb25b0d956d9d',
+    mapId: window.config.mapIds,
     gestureHandling: 'greedy', // disable the stupid default CTRL required to zoom
   };
 
@@ -383,3 +381,30 @@ function alertOrder(callback, delay, reps, orderId) {
     }
   }, delay);
 }
+
+const getConfig = () => {
+  return fetch('./config/config.json')
+    .then(response => response.json())
+    .then(data => {
+      return data;
+    });
+}
+
+const addGMapsScript = () => {
+  var script = document.createElement("script");
+  script.src =
+    "https://maps.googleapis.com/maps/api/js?" +
+    "v=weekly" +
+    "libraries=geometry&" +
+    `key=${window.config.mapsKey}&` +
+    "callback=loadMap&" +
+    `map_ids=${window.config.mapIds}`;
+  script.defer = true;
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+getConfig().then(config => {
+  window.config = config;
+  addGMapsScript();
+});

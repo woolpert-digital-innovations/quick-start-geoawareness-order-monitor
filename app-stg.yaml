@@ -3,7 +3,7 @@ env: flex
 
 env_variables:
   ORDERS_HOST: "https://api-stg.geoawareness.woolpert.dev"
-  API_KEY: "AIzaSyANZ0QPXF3HtTJBoJKccCgSdr9KtUdbDCM"
+  API_KEY: "AIzaSyBgF65UCRQUML-etLPMxtzki98gWROHhAg"
   PULL_INTERVAL_MS: 2000
 
 # Keep it small and cheap

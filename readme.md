@@ -8,21 +8,21 @@ This is a NodeJS web server that serves
 
 3. Install the server
 
-       npm install
+   npm install
 
-1. Start the server (this will start the mock json server and socket server)...
+4. Start the server (this will start the mock json server and socket server)...
 
-       npm run dev
+   npm run dev
 
-1. ...or optionally start just the socket server (like you would in production)
+5. ...or optionally start just the socket server (like you would in production)
 
-       npm start
+   npm start
 
-1. Open the site in the browser http://localhost:8080
+6. Open the site in the browser http://localhost:8080
 
 ## Develop
 
-Edit these files.  The browser and server both use [socket.io](https://socket.io/) to communicate over WebSockets for a realtime feed of orders.
+Edit these files. The browser and server both use [socket.io](https://socket.io/) to communicate over WebSockets for a realtime feed of orders.
 
 - Server code is in `index.js`
 - Client HTML is in `static/index.html` and uses Mustache for inline HTML templating
@@ -31,6 +31,8 @@ Edit these files.  The browser and server both use [socket.io](https://socket.io
 - Most everything else in `static` is from the bootstrap install.
 
 ## Deploy
+
+    cp static/config/config-<env>.json static/config/config.json
 
 ### Sandbox
 
