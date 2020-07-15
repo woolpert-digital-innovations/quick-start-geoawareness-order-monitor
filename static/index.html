@@ -70,11 +70,11 @@
 
     <script id="store-template" type="x-tmpl-mustache">
       <div class="media position-relative">
-        <div class="card text-white bg-primary mb-3 w-100">
-          <div class="card-header w-100">{{ store.name }}</div>
+        <div class="card mb-3 w-100">
+          <h4 class="card-header text-white bg-primary w-100">{{ store.name }}</h4>
           <div class="card-body">
-            <p class="card-text text-white">{{ store.address }}
-            <a href="#!" onClick="onGetOrders('{{ store.name }}');" class="text-white text-decoration-underline attr stretched-link"></a>
+            <p class="card-text">{{ store.address }}
+            <a href="#!" onClick="onGetOrders('{{ store.name }}');" class="text-decoration-underline attr stretched-link"></a>
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@
 
     <script id="order-group-template" type="x-tmpl-mustache">
       <div id="range-{{ range.id }}">
-        <div class="card text-white text-center bg-primary mb-0 mt-3 w-100" style="transform: rotate(0);">
+        <h5 class="card text-center text-white bg-primary mb-0 mt-3 w-100" style="transform: rotate(0);">
           <div class="card-body">
             <a href="#!" onClick="onShowRange('{{range.id}}');" class="text-white stretched-link">{{ range.time }} min</a>
           </div>
