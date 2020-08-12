@@ -1,2 +1,3 @@
 node_modules
-static/config/config*.json
+static/config/config-*.json
+app-*.yaml
