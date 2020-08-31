@@ -5,8 +5,22 @@ Order Monitor is a web application (NodeJS) consisting of a near real-time dashb
 ## Prerequisites
 
 - Create a new Map Id and associated style in the Cloud Console. Follow these [instructions](https://developers.google.com/maps/documentation/javascript/cloud-based-map-styling).
-- Create a Maps API key. This API key will be used to authenticate the application with the Dynamic Maps and Directions APIs.
+- Create a Maps API key. This API key will be used to authenticate the application with the Maps JavaScript API.
 - Create another API key. This API key will be used to authenticate the Order Monitor web server (backend) with the GeoAwareness REST API.
+
+## Configure application
+
+1. Edit the client-side app config file `static/config/config.json`. The `mapsKey` must have permissions for
+   [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview).
+   Set `mapIds` to the Map Id created earlier.
+
+1. Edit the webserver (backend) config file `app.yaml`. The `API_KEY` must have permissions for the GeoAwareness REST API.
+
+   Set `ORDERS_HOST` to the GeoAwareness REST API endpoint. Example:
+
+   ```
+   ORDERS_HOST: "https://api.geoawareness.woolpert.dev"
+   ```
 
 ## Run Locally
 
@@ -38,24 +52,11 @@ Order Monitor is a web application (NodeJS) consisting of a near real-time dashb
 
 - Server code: `index.js`
 - Client HTML: `static/index.html` and uses Mustache for inline HTML templating
-- Client code: `static/app.js` and uses POJS (Plain Old JavaScript)
+- Client code: `static/app.js` uses plain JavaScript
 - Client UX is done with [Material Design Bootstrap](https://mdbootstrap.com/docs/)
 - Most everything else in `static` is from the bootstrap install.
 
 The browser and server both use [socket.io](https://socket.io/) to communicate over WebSockets for a realtime feed of orders.
-
-## Configure application
-
-1. Edit the client-side app config file `static/config/config.json`. The `mapsKey` must have permissions for Google Maps Platform Dynamic Maps API.
-   Set `mapIds` to the Map Id created earlier.
-
-1. Edit the webserver (backend) config file `app.yaml`. The `API_KEY` must have permissions for the GeoAwareness REST API.
-
-   Set `ORDERS_HOST` to the GeoAwareness REST API endpoint. Example:
-
-   ```
-   ORDERS_HOST: "https://api.geoawareness.woolpert.dev"
-   ```
 
 ## Deploy to GCP - App Engine
 
