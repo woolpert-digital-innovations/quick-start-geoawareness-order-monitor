@@ -4,23 +4,20 @@ Order Monitor is a web application (NodeJS) consisting of a near real-time dashb
 
 ## Prerequisites
 
-- Create a new Map Id and associated style in the Cloud Console. Follow these [instructions](https://developers.google.com/maps/documentation/javascript/cloud-based-map-styling).
-- Create a Maps API key. This API key will be used to authenticate the application with the Maps JavaScript API.
-- Create another API key. This API key will be used to authenticate the Order Monitor web server (backend) with the GeoAwareness REST API.
+Perform the following steps inside your Google Cloud Project using [Cloud Console](https://console.cloud.google.com).
 
-## Configure application
+1. Create a new Map Id and associated style. Follow these [instructions](https://developers.google.com/maps/documentation/javascript/cloud-based-map-styling).
+1. Create a Maps API key. This API key will be used to authenticate the application with the Maps JavaScript API.
+1. Create a GeoAwareness API key. This API key will be used to authenticate the Order Monitor web server (backend) with the GeoAwareness REST API.
 
-1. Edit the client-side app config file `static/config/config.json`. The `mapsKey` must have permissions for
-   [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview).
-   Set `mapIds` to the Map Id created earlier.
+Make sure to follow API key best practices, including [Securing an API key](https://cloud.google.com/docs/authentication/api-keys#securing_an_api_key).
 
-1. Edit the webserver (backend) config file `app.yaml`. The `API_KEY` must have permissions for the GeoAwareness REST API.
+## Configure client-side application
 
-   Set `ORDERS_HOST` to the GeoAwareness REST API endpoint. Example:
+Edit the client-side app config file `static/config/config.json`.
 
-   ```
-   ORDERS_HOST: "https://api.geoawareness.woolpert.dev"
-   ```
+- `mapsKey` must have permissions for [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview).
+- add the Map Id created in the prerequisites to `mapIds`.
 
 ## Run Locally
 
@@ -34,19 +31,22 @@ Order Monitor is a web application (NodeJS) consisting of a near real-time dashb
    npm install
    ```
 
-1. Start the server (this will start the mock json server and socket server)...
+1. Create a `.env` file at the root and set the following keys:
+
+   ```
+   PORT=5000 # optional, defaults to 8080
+   ORDERS_HOST="GEOAWARENESS_REST_API_ENDPOINT"
+   API_KEY="YOUR_API_KEY"
+   PULL_INTERVAL_MS=2000 # optional
+   ```
+
+1. Start the server...
 
    ```
    npm run dev
    ```
 
-1. ...or optionally start just the socket server (like you would in production)
-
-   ```
-   npm start
-   ```
-
-1. Open the site in the browser: http://localhost:8080
+1. Open the site in the browser: http://localhost:5000
 
 ## Application design and code structure
 
@@ -58,7 +58,18 @@ Order Monitor is a web application (NodeJS) consisting of a near real-time dashb
 
 The browser and server both use [socket.io](https://socket.io/) to communicate over WebSockets for a realtime feed of orders.
 
-## Deploy to GCP - App Engine
+## Deploy to GCP
+
+Configure the server-side application by editing `app.yaml` environment variables. `API_KEY` must have permissions for the GeoAwareness REST API.
+
+```
+env_variables:
+   ORDERS_HOST: "GEOAWARENESS_REST_API_ENDPOINT"
+   API_KEY: "YOUR_API_KEY"
+   PULL_INTERVAL_MS: 2000 # optional
+```
+
+Deploy to AppEngine
 
 ```
 gcloud app deploy app.yaml

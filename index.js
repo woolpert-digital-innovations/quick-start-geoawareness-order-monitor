@@ -2,7 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 const baseURL = process.env.ORDERS_HOST;
 const key = process.env.API_KEY;
 const interval = process.env.PULL_INTERVAL_MS || 2000;
@@ -19,11 +19,11 @@ app.get('/', (req, res) => {
 let storeName;
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('user connected');
 
   let url = `${baseURL}/stores?key=${key}`;
   fetch(url).then((res) => res.json()).then((json) => {
-    console.log('got stores from', url);
+    console.log('fetched stores from', url);
     socket.emit('connected', json);
   });
 
@@ -32,11 +32,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('get geofences', (msg) => {
-    storeName = msg; // TODO: fix this kludge, set this properly
-    socket.join(`orders/${msg}`); // join the client to the orders for this store
-    url = `${baseURL}/geofences?storeName=${msg}&key=${key}`;
+    storeName = msg; // This is a side effect. Sets storeName as a global upon getting geofences. Fix this with a better approach.
+    socket.join(`orders/${storeName}`); // join the client to the orders for this store
+    url = `${baseURL}/geofences?storeName=${storeName}&key=${key}`;
     fetch(url).then((res) => res.json()).then((json) => {
-      console.log('got geofences from', url);
+      console.log('fetched geofences from', url);
       socket.emit('geofences', json);
     });
   });
@@ -61,7 +61,6 @@ io.on('connection', (socket) => {
 
 // emits orders to all connected sockets
 function pullOrders() {
-  // Ideally, this should know of all the stores and emit to all namespaces and not Carmelit only
   const url = `${baseURL}/orders?storeName=${storeName}&status=open&key=${key}`;
   fetch(url).then((res) => res.json()).then((json) => {
     io.to(`orders/${storeName}`).emit('orders', json);

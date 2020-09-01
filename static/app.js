@@ -127,7 +127,7 @@ function onHoverOrderGroup(id) {
 }
 
 function onShowRange(range) {
-  // recenter the map to isochrone extents
+  // recenter the map to geofence extents
   let geofence = geofencesLayer.getFeatureById(range);
   if (!geofence) {
     geofence = geofencesLayer.getFeatureById(600);
@@ -212,7 +212,7 @@ socket.on('orders', (msg) => {
     });
   });
 
-  // render the isochrone grouping headers
+  // render the geofence grouping headers
   document.getElementById('stores').innerHTML = '';
   orderGroups.forEach((group) => {
     const template = document.getElementById('order-group-template').innerHTML;
@@ -227,7 +227,7 @@ socket.on('orders', (msg) => {
   });
 
   orderGroups.forEach((group) => {
-    // indicate no orders for this isochrone range
+    // indicate no orders for this geofence range
     let emptyGroup = true;
     group.orders.forEach((order) => {
       if (!order.status.includes('closed')) {
@@ -269,7 +269,7 @@ socket.on('orders', (msg) => {
       const rendered = Mustache.render(template, { order: order });
       document.getElementById(`range-${group.range}`).innerHTML += rendered;
 
-      // alert the user as the order enters the inner most isochrone
+      // alert the user as the order enters the innermost geofence
       previousOrders.forEach((previousOrder) => {
         if (previousOrder.orderId === order.orderId
           && previousOrder.latestEvent && previousOrder.latestEvent.innerGeofence
@@ -301,7 +301,7 @@ socket.on('geofences', (msg) => {
   }
   console.log('geofences', geofences);
   const bounds = new google.maps.LatLngBounds();
-  geofences.reverse(); // assume API returns outter most isochrone at index 0
+  geofences.reverse(); // assume API returns outermost geofence at index 0
 
   geofencesLayer.setMap(map);
   for (let i = 0; i < geofences.length; i++) {
